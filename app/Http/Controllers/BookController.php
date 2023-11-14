@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View;
+
 
 class BookController extends Controller
 {
@@ -45,24 +48,43 @@ class BookController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Book $book)
+    public function edit(Book $book): View
+
     {
-        //
+        return view('books.edit', [
+            'book' => $book,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Book $book)
+    public function update(Request $request, Book $book): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'relese_date' => 'required|integer|between:1901,2155',
+            'price' => 'required|decimal:2',
+            
+        ],
+        [
+
+            'relese_date.required' => 'The relese year field is required.',
+            'relese_date.between' => 'The relese year field must be between 1901 and 2155.'
+        ]);
+
+        $book->update($validated);
+        
+        return redirect(route('books.index'));
     }
+    
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Book $book)
     {
-        //
+        $book->delete();
+        return redirect('/books');
     }
 }

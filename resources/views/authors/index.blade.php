@@ -16,8 +16,15 @@
                             <div class="flex border-b justify-between items-center">
                               {{ $author->first_name }} {{ $author->last_name }} 
                               <div class="grid grid-cols-2 gap-2 pt-2">
-                                <x-primary-button>edit</x-primary-button>
-                                <x-danger-button>delete</x-danger-button>
+                                <a href="{{  route('authors.edit', $author)  }}">edit</a>
+
+                                <form method="POST" action="{{ route('authors.destroy', $author) }}">
+                                    @csrf
+                                    @method('delete')
+                                    <x-danger-button onclick="event.preventDefault(); this.closest('form').submit();">
+                                        Delete
+                                    </x-danger-button>
+                                </form>
                               </div>
                             </div>
                           </li>
