@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class BookController extends Controller
      */
     public function index()
     {
-
+        
         return view('books.index', [
             'books' => Book::paginate(20)
         ]);
@@ -50,7 +51,7 @@ class BookController extends Controller
      */
     public function edit(Book $book): View
 
-    {
+    {   
         return view('books.edit', [
             'book' => $book,
         ]);
@@ -63,15 +64,17 @@ class BookController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'relese_date' => 'required|integer|between:1901,2155',
-            'price' => 'required|decimal:2',
+            'release_date' => 'required|integer|between:1901,2155',
+            'price' => ['required', 'regex:/^\d+(,\d|,\d{2})?$/i'],
+            'type' => 'required'
             
         ],
         [
-
-            'relese_date.required' => 'The relese year field is required.',
-            'relese_date.between' => 'The relese year field must be between 1901 and 2155.'
+            
+            'release_date.required' => 'The release year field is required.',
+            'release_date.between' => 'The release year field must be between 1901 and 2155.'
         ]);
+    
 
         $book->update($validated);
         
@@ -85,6 +88,12 @@ class BookController extends Controller
     public function destroy(Book $book)
     {
         $book->delete();
+        return redirect('/books');
+    }
+
+    public function detachAuthor(Author $author)
+    { dd($author);
+        $author->delete();
         return redirect('/books');
     }
 }
